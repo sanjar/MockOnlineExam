@@ -111,10 +111,10 @@
 			<td colspan="2">Are you sure you want to submit the Exam ?</td>
 		</tr>
 		<tr>
-			<td style="text-align: center"><input
-				value="Yes" type="button"></td>
-			<td style="text-align: center"><input
-				class="button" style="width: 50px" value="No" type="button"></td>
+			<td style="text-align: center"><a href="examCompleted?session=logout"><input
+				class="button" value="Yes" type="button" ></a></td>
+			<td style="text-align: center"><a href="mytest?quesNo=1"><input
+				class="button" style="width: 50px" value="No" type="button"></a></td>
 		</tr>
 	</tbody>
 </table>

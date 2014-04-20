@@ -118,7 +118,7 @@
 				
 				<br>
 				<div id="sysInstText1" style="height: 93%; width: 99.5%; overflow: auto;">
-				<b><a id="instPaginationa" href="mytest" style="float:right">Next &gt;&gt;</a></b>
+				<b><a id="instPaginationa" href="enterUserDetails" style="float:right">Next &gt;&gt;</a></b>
 				<p align="center"><strong><span><b>Please read the following instructions carefully</b></span></strong></p>
 <p><strong><u>General Instructions:</u></strong> <br></p>
 <ol>
@@ -185,7 +185,7 @@ name. The section you are currently viewing is highlighted.</li>
 <li>After clicking the <b>Save &amp; Next</b> button on the last question for a section, you will automatically be taken to the first question of the next section. </li>
 <li>You can move the mouse cursor over the section names to view the status of the questions for that section. </li>
 <li>You can shuffle between sections and questions anytime during the examination as per your convenience. </li></ol></div></div>
-				<div id="instPagination"><center><b><a id="instPaginationa" href="mytest">Next &gt;&gt;</a></b></center></div>
+				<div id="instPagination"><center><b><a id="instPaginationa" href="enterUserDetails">Next &gt;&gt;</a></b></center></div>
 		</div>
 	</div>
 	<script>

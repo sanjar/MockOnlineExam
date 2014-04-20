@@ -15,5 +15,7 @@
 	<classpathentry kind="lib" path="D:/Workspace/Webflow/LibraryWeb/WebContent/WEB-INF/lib/spring-context-3.0.7.RELEASE.jar"/>
 	<classpathentry kind="lib" path="D:/Workspace/Webflow/LibraryWeb/WebContent/WEB-INF/lib/spring-web-3.0.7.RELEASE.jar"/>
 	<classpathentry kind="lib" path="D:/Workspace/Webflow/LibraryWeb/WebContent/WEB-INF/lib/spring-webmvc-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="C:/Users/sanjar/git/MockOnlineExam/MockOnlineExam/WebContent/WEB-INF/lib/javax.mail.jar"/>
+	<classpathentry kind="lib" path="C:/Users/sanjar/git/MockOnlineExam/MockOnlineExam/WebContent/WEB-INF/lib/activation.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

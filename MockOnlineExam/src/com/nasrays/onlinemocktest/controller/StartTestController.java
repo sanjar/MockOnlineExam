@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,11 +20,13 @@ import com.nasrays.onlinemocktest.dao.MockTestDao;
 import com.nasrays.onlinemocktest.model.Course;
 import com.nasrays.onlinemocktest.model.QuestionAnswer;
 import com.nasrays.onlinemocktest.model.Subject;
+import com.nasrays.onlinemocktest.model.UserDetails;
 import com.nasrays.onlinemocktest.model.UserQuestionAnswerResponse;
 import com.nasrays.onlinemocktest.utils.Constants;
 
 
 @Controller
+@Scope(value="session")
 public class StartTestController{
 
 	private Integer currentQuestionCount=1;
@@ -30,20 +34,6 @@ public class StartTestController{
 	private Integer totalNoOfQuestions;
 	private Map<String,UserQuestionAnswerResponse> userResponseMap = new HashMap<String, UserQuestionAnswerResponse>();
 	private Integer count =1;
-	
-	@RequestMapping(value="mytest1")
-	public ModelAndView welcomeToMockTest(ModelMap model,@RequestParam(value="courseId",required=false) String courseId) {
-		MockTestDao mtDao = new MockTestDao();
-		List<Course>courses = mtDao.getCourses();
-		ModelAndView mav = new ModelAndView();
-		model.addAttribute("courses",courses);
-		if(null!=courseId){
-			List<Subject> subjects = mtDao.getSubjects(courseId);
-			model.addAttribute("subjects",subjects);
-		}
-		mav.setViewName("welcomemocktest");
-		return mav;
-	}
 	
 	@RequestMapping(value="welcome")
 	public ModelAndView welcomeScreen(ModelMap model) {
@@ -69,6 +59,20 @@ public class StartTestController{
 			@RequestParam(value = "quesNo", required = false, defaultValue = "1") Integer questionNo,
 			@RequestParam Map<String, String> allRequestParams,HttpServletRequest request) {
 		MockTestDao mtDao = new MockTestDao();
+		if(null !=allRequestParams.get("emailid")){
+			UserDetails userDetails = new UserDetails();
+			userDetails.setEmail(allRequestParams.get("emailid"));
+			userDetails.setDateOfBirth(allRequestParams.get("dateofbirth"));
+			userDetails.setAddress(allRequestParams.get("address"));
+			userDetails.setInstitutionName(allRequestParams.get("institutionname"));
+			userDetails.setName(allRequestParams.get("username"));
+			userDetails.setTestIdTaken(allRequestParams.get("tests"));
+			
+			request.getSession().setAttribute("userDetails", userDetails);
+			Map<Integer, QuestionAnswer> mapOfQuestionAndAnswer = mtDao
+			.getQuestionAndAnswer(allRequestParams.get("tests"));
+			setMapOfQuestionAndAnswer(mapOfQuestionAndAnswer);
+		}
 		if (null == this.mapOfQuestionAndAnswer) {
 			Map<Integer, QuestionAnswer> mapOfQuestionAndAnswer = mtDao
 					.getQuestionAndAnswer();
@@ -97,11 +101,14 @@ public class StartTestController{
 		if("submit".equalsIgnoreCase(allRequestParams.get("requestAsked"))){
 			List<Integer> list = getResponseList();
 			model.addAttribute("userResponseList", list);
+			request.getSession().setAttribute("mapOfQuestionAndAnswer", this.mapOfQuestionAndAnswer);
+			request.getSession().setAttribute("userResponseMap", this.userResponseMap);
 		}
 		model.addAttribute("userResponseMap", this.userResponseMap);
 		return mav;
 	}
 
+	
 	private List<Integer> getResponseList() {
 		int totalAnswered=0;
 		int totalNotAnswered=0;
@@ -132,44 +139,6 @@ public class StartTestController{
 		return list;
 	}
 
-	@RequestMapping(value="examFinished")
-	public ModelAndView examFinsished(ModelMap model) {
-		ModelAndView mav = new ModelAndView();
-		model.addAttribute("mapOfQuestionAndAnswer", this.mapOfQuestionAndAnswer);
-		this.totalNoOfQuestions = this.mapOfQuestionAndAnswer.keySet().size();
-		model.addAttribute("totalNoOfQuestions", this.totalNoOfQuestions);
-		
-		int totalAnswered=0;
-		int totalNotAnswered=0;
-		int totalNotVisited=0;
-		int totalMarkedForReview=0;
-		int totalAnsweredButMarkedForReview=0;
-		for(UserQuestionAnswerResponse response:userResponseMap.values()){
-			if(Constants.ANSWERED.equals(response.getQuestionStatus())){
-				totalAnswered++;
-			}else if(Constants.NOT_ANSWERED.equals(response.getQuestionStatus())){
-				totalNotAnswered++;
-			}else if(Constants.NOT_VISITED.equals(response.getQuestionStatus())){
-				totalNotVisited++;
-			}else if(Constants.REVIEW.equals(response.getQuestionStatus())){
-				totalMarkedForReview++;
-			}
-			else if(Constants.REVIEW_ANSWERED.equals(response.getQuestionStatus())){
-				totalAnsweredButMarkedForReview++;
-			}
-		}
-		
-		List<Integer> list = new ArrayList<Integer>();
-		list.add(totalAnswered);
-		list.add(totalNotAnswered);
-		list.add(totalNotVisited);
-		list.add(totalMarkedForReview);
-		list.add(totalAnsweredButMarkedForReview);
-		
-		model.addAttribute("userResponseList", list);
-		mav.setViewName("submitPage");
-		return mav;
-	}
 	public Map<Integer, QuestionAnswer> getMapOfQuestionAndAnswer() {
 		return mapOfQuestionAndAnswer;
 	}
