@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:webflow="http://www.springframework.org/schema/webflow-config"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.0.xsd">
+
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+    <context:component-scan base-package="com.nasrays.onlinemocktest.controller" />
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <beans:property name="basename">
+        	<beans:value>messages</beans:value>
+        </beans:property>
+    </beans:bean>
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	    <beans:property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+	    <beans:property name="prefix" value="/WEB-INF/views/"/>
+	    <beans:property name="suffix" value=".jsp"/>
+	</beans:bean>
+	<beans:bean id="dataSource" 
+      class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <beans:property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+      <beans:property name="url" value="jdbc:mysql://localhost:3306/online_mock_test"/>
+      <beans:property name="username" value="root"/>
+      <beans:property name="password" value=""/>
+   </beans:bean>
+   <mvc:resources mapping="/css/**" location="/WEB-INF/views/css/" />
+    <mvc:resources mapping="/js/**" location="/WEB-INF/views/js/" />
+    <mvc:resources mapping="/images/**" location="/WEB-INF/views/images/" />
+	
+</beans:beans>
