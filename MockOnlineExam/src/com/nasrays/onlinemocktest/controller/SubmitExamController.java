@@ -18,6 +18,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.nasrays.onlinemocktest.dao.MockTestDao;
 import com.nasrays.onlinemocktest.model.QuestionAnswer;
@@ -36,6 +37,10 @@ public class SubmitExamController {
 		
 		ModelAndView mav = new ModelAndView();
 		
+		if(null!=request.getSession() && null ==request.getSession().getAttribute("userDetails")){
+			mav = new ModelAndView(new RedirectView("enterUserDetails"));
+			return mav;
+		}
 		mav.setViewName("examCompleted");
 		UserDetails userDetails = (UserDetails)request.getSession().getAttribute("userDetails");
 		saveUserDetails(userDetails);

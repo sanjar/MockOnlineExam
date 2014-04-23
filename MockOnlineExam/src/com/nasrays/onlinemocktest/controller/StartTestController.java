@@ -8,18 +8,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.nasrays.onlinemocktest.dao.MockTestDao;
-import com.nasrays.onlinemocktest.model.Course;
 import com.nasrays.onlinemocktest.model.QuestionAnswer;
-import com.nasrays.onlinemocktest.model.Subject;
 import com.nasrays.onlinemocktest.model.UserDetails;
 import com.nasrays.onlinemocktest.model.UserQuestionAnswerResponse;
 import com.nasrays.onlinemocktest.utils.Constants;
@@ -59,6 +56,7 @@ public class StartTestController{
 			@RequestParam(value = "quesNo", required = false, defaultValue = "1") Integer questionNo,
 			@RequestParam Map<String, String> allRequestParams,HttpServletRequest request) {
 		MockTestDao mtDao = new MockTestDao();
+		ModelAndView mav = new ModelAndView();
 		if(null !=allRequestParams.get("emailid")){
 			UserDetails userDetails = new UserDetails();
 			userDetails.setEmail(allRequestParams.get("emailid"));
@@ -73,12 +71,16 @@ public class StartTestController{
 			.getQuestionAndAnswer(allRequestParams.get("tests"));
 			setMapOfQuestionAndAnswer(mapOfQuestionAndAnswer);
 		}
+		if(null!=request.getSession() && null ==request.getSession().getAttribute("userDetails")){
+			mav = new ModelAndView(new RedirectView("enterUserDetails"));
+			return mav;
+		}
 		if (null == this.mapOfQuestionAndAnswer) {
 			Map<Integer, QuestionAnswer> mapOfQuestionAndAnswer = mtDao
 					.getQuestionAndAnswer();
 			setMapOfQuestionAndAnswer(mapOfQuestionAndAnswer);
 		}
-		ModelAndView mav = new ModelAndView();
+		
 		model.addAttribute("mapOfQuestionAndAnswer",
 				this.mapOfQuestionAndAnswer);
 		model.addAttribute("currentQuestionCount", questionNo);
