@@ -28,14 +28,14 @@
 		<servlet-name>Spring MVC Dispatcher Servlet</servlet-name>
 		<url-pattern>/spring/*</url-pattern>
 	</servlet-mapping>
-	<filter>
+	<!-- <filter>
     	<filter-name>MyFilter</filter-name>
     	<filter-class>com.nasrays.onlinemocktest.filter.DisableBackButtonFilter</filter-class>
 	</filter>
 	<filter-mapping>
    		<filter-name>MyFilter</filter-name>
    		<servlet-name>Spring MVC Dispatcher Servlet</servlet-name>
-	</filter-mapping>
+	</filter-mapping> -->
 
    <resource-ref>
 <description>Database for User</description>

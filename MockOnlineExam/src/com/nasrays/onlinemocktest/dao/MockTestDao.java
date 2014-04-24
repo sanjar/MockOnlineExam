@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import com.nasrays.onlinemocktest.model.Course;
@@ -54,30 +55,53 @@ public class MockTestDao {
 	
 
 		   public Connection getConnection(){
-		      Connection con = null;
-              
-		      /*String url = "jdbc:mysql://118.139.168.61:3306/ngogupta";
-		      String user = "ngogupta";
-		      String password = "anoop#421MAN";*/
-		      /*String url="jdbc:mysql://54.215.148.52:3306/sql336214";
-		       String user="sql336214";
-		       String password="zV6*iE2%"; */
-		      DataSource ds=null;
-		      try {
-		    	 /*Class.forName("com.mysql.jdbc.Driver");
-		        con = DriverManager.getConnection(url, user, password);*/
-		         Context c = new InitialContext(); 
-		         ds = (DataSource)c.lookup("java:comp/env/jdbc/database_mock_test");
-		         con = ds.getConnection();
-		         System.out.println("Connection completed.");
-		      } catch (Exception ex) {
-		    	  ex.printStackTrace();
-		         System.out.println(ex.getMessage());
-		      }
-		      finally{
-		      }
+		     // Connection con = getLocalDBConnection();
+		      Connection con = getRemoteDBConnection();
 		      return con;
 		   }
+
+
+
+		private Connection getRemoteDBConnection() {
+			Connection con=null;
+			String url="jdbc:mysql://db4free.net:3306/nasrays";
+		       String user="nasrays";
+		       String password="qwertyuiop";
+		       
+		       try {
+				Class.forName("com.mysql.jdbc.Driver");
+				 con = DriverManager.getConnection(url, user, password);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		      
+			return con;
+		}
+
+
+
+		private Connection getLocalDBConnection() {
+			Connection con = null;
+			 DataSource ds=null;
+			Context c;
+			try {
+				c = new InitialContext();
+				 ds = (DataSource)c.lookup("java:comp/env/jdbc/database_mock_test");
+		         con = ds.getConnection();
+			} catch (NamingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+	        
+			return con;
+		}
 
 
 
