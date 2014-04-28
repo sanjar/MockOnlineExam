@@ -11,9 +11,14 @@
 <link rel="stylesheet" type="text/css" href="css/aecInstructions.css">
 
 <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="js/jquery.plugin.js"></script>
+<script type="text/javascript" src="js/jquery.countdown.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
 		loadQuestionAnswers();
+		var requestTimeLeft = <%=request.getSession().getAttribute("timeLeft")%>
+		//alert(requestTimeLeft);
+		$('#timeInMins').countdown({until:requestTimeLeft,compact: true, format: 'MS',description: ''});
 	});
 	function loadQuestionAnswers(){
 		$(':radio[value="${userResponseMap[currentQuestionInString].userChosenAnswer}"]').attr('checked', 'checked');
@@ -21,6 +26,9 @@
 	
 	function onsubmitform()
 	{
+		alert($('#timeInMins').text());
+		alert($('#timeLeft').val());
+		$('#timeLeft').val($('#timeInMins').text());
 		
 	  if(document.pressed == 'back')
 	  {
@@ -37,6 +45,7 @@
 		  {
 			  document.questionForm.action ="mytest?submitRequest=true";
 			   $('#requestAsked').val("submit");
+			   $('#quesNo').val("${currentQuestionCount}");
 		  }
 	  return true;
 	}
@@ -217,11 +226,11 @@ Question No. ${currentQuestionCount}</b></div>
 	</c:if>
 	
 	<c:if test="${currentQuestionCount == totalNoOfQuestions}">
-	<a href="mytest?quesNo=${currentQuestionCount+1}"> 
+	 <input id="quesNo" name="quesNo" type="hidden"/>
 		<span style="float: right"><input
 		style="background-color: #3778BD; color: #FFFFFF; padding-top: 5px; padding-bottom: 5px; width: 180px; height: 35px"
 		id="submit" class="button"
-		value="Submit" type="submit" onclick="document.pressed=this.id"></span></a>
+		value="Submit" type="submit" onclick="document.pressed=this.id"></span>
 	</c:if>
 	</form>
 	</c:if>
@@ -238,8 +247,10 @@ Question No. ${currentQuestionCount}</b></div>
 	id="candidateImg" height="70px" width="70px"></center>
 </div>
 <div style="width: 59%; height: 75px; float: left;">
-<div style="margin-top: 20px; width: 100%;" id="showTime"><b>Time
-Left : <span id="timeInMins">16:14</span></b></div>
+<div style="margin-top: 20px; width: 100%;" id="showTime">
+<input id="timeLeft" name="timeLeft" type="hidden" />
+<b>Time
+Left : <span id="timeInMins"></span></b></div>
 <div style="width: 100%"><i>Candidate</i></div>
 <div id="showCalc"
 	style="display: none; height: 25px; width: 100px; position: relative;"><img
@@ -251,8 +262,7 @@ Left : <span id="timeInMins">16:14</span></b></div>
 <div id="loadCalc"
 	style="display: none; z-index: 999; position: absolute"></div>
 <div class="numberpanel" style="height: 609px;">
-<div id="viewSection">You are viewing <b>General Awareness</b>
-section</div>
+
 <div id="quesPallet" style="height: 5%; margin-left: 5px">Question
 Palette :</div>
 <div style="height: 369px;" id="numberpanelQues">

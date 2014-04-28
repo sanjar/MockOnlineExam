@@ -75,6 +75,12 @@ public class StartTestController{
 			mav = new ModelAndView(new RedirectView("enterUserDetails"));
 			return mav;
 		}
+		if(null!=allRequestParams.get("timeLeft")){
+			request.getSession().setAttribute("timeLeft", allRequestParams.get("timeLeft"));
+		}
+		else{
+			request.getSession().setAttribute("timeLeft", 1800);
+		}
 		if (null == this.mapOfQuestionAndAnswer) {
 			Map<Integer, QuestionAnswer> mapOfQuestionAndAnswer = mtDao
 					.getQuestionAndAnswer();

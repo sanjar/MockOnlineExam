@@ -13,6 +13,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.catalina.tribes.util.Arrays;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,7 +47,7 @@ public class SubmitExamController {
 		saveUserDetails(userDetails);
 		saveSubmittedExam(request,userDetails.getEmail(),userDetails.getTestIdTaken());
 		
-		sendExamResultViaMail(userDetails.getEmail(),(List<Subject>)request.getSession().getAttribute("testList"),userDetails);
+		sendExamResultViaMail(userDetails.getEmail(),(List<Subject>)request.getSession().getAttribute("testList"),userDetails,getAnswerDetails(request));
 		model.addAttribute("userEmailId", userDetails.getEmail());
 		request.getSession().invalidate();
 		
@@ -60,6 +61,13 @@ public class SubmitExamController {
 	}
 
 	private void saveSubmittedExam(HttpServletRequest request, String emailId, String testId) {
+		int[] answerDetailsArray= getAnswerDetails(request);
+		Map<Integer,QuestionAnswer> map=(Map<Integer, QuestionAnswer>) request.getSession().getAttribute("mapOfQuestionAndAnswer");
+		
+		mtDao.saveUserSubmittedExam(emailId,testId,answerDetailsArray[0],answerDetailsArray[1],answerDetailsArray[2],answerDetailsArray[0]>=map.size()/2);
+	}
+
+	private int[] getAnswerDetails(HttpServletRequest request) {
 		int noOfCorrectAnswer=0;
 		int noOfWrongAnswer=0;
 		int noOfUnanswered=0;
@@ -75,20 +83,27 @@ public class SubmitExamController {
 				}
 				
 			}
-			else if(Constants.NOT_ANSWERED.equalsIgnoreCase(map2.get(s).getQuestionStatus())){
+			else /*if(Constants.NOT_ANSWERED.equalsIgnoreCase(map2.get(s).getQuestionStatus()))*/{
 				noOfUnanswered++;
 			}
 		}
-		mtDao.saveUserSubmittedExam(emailId,testId,noOfCorrectAnswer,noOfWrongAnswer,noOfUnanswered,noOfCorrectAnswer>=map.size()/2);
+		
+		return new int[]{noOfCorrectAnswer,noOfWrongAnswer,noOfUnanswered};
 	}
 
-	private void sendExamResultViaMail(String emailId, List<Subject> testList, UserDetails userDetails) {
+	private void sendExamResultViaMail(String emailId, List<Subject> testList, UserDetails userDetails, int[] answerDetailsArray) {
 		String testName="";
 		for(Subject sub:testList){
 			if(sub.getSubjectId().equalsIgnoreCase(userDetails.getTestIdTaken())){
 				testName=sub.getSubjectName();
 			}
 		}
+		String result=getHTMLResultContent(userDetails.getName(),testName,answerDetailsArray);
+		sendMail(emailId, userDetails.getName(), testName,result);
+	}
+
+	private void sendMail(String emailId, String name,
+			String testName,String content) {
 		final String username = "nasraysinfo@gmail.com";
 		final String password = "test123test";
  
@@ -112,8 +127,10 @@ public class SubmitExamController {
 					message.setRecipients(Message.RecipientType.TO,
 						InternetAddress.parse(emailId));
 					message.setSubject("Exam Result of Test: "+testName);
-					message.setText("Dear "+userDetails.getName()
+					
+					message.setText("Dear "+name
 						+ "\n\n Here is your result.!");
+					message.setContent(content, "text/html");
 		 
 					Transport.send(message);
 		 
@@ -121,4 +138,50 @@ public class SubmitExamController {
 					throw new RuntimeException(e);
 				}
 	}
+
+	private String getHTMLResultContent(String userName,
+			String testName, int[] answerDetailsArray) {
+		String htmlContent = "<html>\n"+
+		"<head>\n"+
+		"</head>\n"+
+		  "<body bgcolor='skyblue'>\n"+
+		    "<div>Dear " + userName +"</div>\n"+
+		    "<div>Here is your result.!</div>\n"+
+		    "<div style='height: 509px; display: block;' id='sectionSummaryDiv'>\n"+
+		"<center>\n"+
+		"<h3><b>Exam Summary</b></h3>\n"+
+		"<table>\n"+
+			
+			"<tbody>\n"+
+				"<tr>\n"+
+					"<th>Test Name</th>\n"+
+					"<th>No. of Questions</th>\n"+
+					"<th>No of Correct Answers</th>\n"+
+					"<th>No of Wrong Answers</th>\n"+
+					"<th>No of UnAnswered Questions</th>\n"+
+					
+					
+				"</tr>\n"+
+				"<tr>\n"+
+					"<td>"+testName+"</td>\n"+
+					"<td>"+Arrays.add(answerDetailsArray)+"</td>\n"+
+					"<td>"+answerDetailsArray[0]+"</td>\n"+
+					"<td>"+answerDetailsArray[1]+"</td>\n"+
+					"<td>"+answerDetailsArray[2]+"</td>\n"+
+				"</tr>\n"+
+			"</tbody>\n"+
+		"</table>\n"+
+		"</center>\n"+
+		"</div>\n"+ 
+		  "</body>\n"+
+		"</html>\n";
+		return htmlContent;
+	}
+	
+	/*public static void main(String[] args) {
+		SubmitExamController s = new SubmitExamController();
+		
+		String st=s.getHTMLResultContent("xyz", new Integer[]{1,2,3});
+		s.sendMail("sanjar.sadique@gmail.com", "hd","hello",st);
+	}*/
 }
