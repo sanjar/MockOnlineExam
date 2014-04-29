@@ -26,10 +26,17 @@
 	
 	function onsubmitform()
 	{
-		alert($('#timeInMins').text());
-		alert($('#timeLeft').val());
-		$('#timeLeft').val($('#timeInMins').text());
+		//alert($('#timeInMins').text());
+		//alert($('#timeLeft').val());
 		
+	  if(document.pressed == 'noSubmit' || document.pressed == 'yesSubmit')	{
+		  if(document.pressed == 'noSubmit'){
+			  document.questionForm.action ="mytest?quesNo=1";
+		  }
+		  else{
+			  document.questionForm.action ="examCompleted?session=logout";
+		  }
+	  }
 	  if(document.pressed == 'back')
 	  {
 	   document.questionForm.action ="mytest?quesNo=${currentQuestionCount-1}";
@@ -39,6 +46,9 @@
 	  if(document.pressed == 'savenext' || document.pressed == 'underreview')
 	  {
 		  document.questionForm.action ="mytest?quesNo=${currentQuestionCount+1}";
+		  if(document.pressed == 'underreview'){
+			  $('#requestAsked').val("underreview");
+		  }
 	  }
 	  else
 		  if(document.pressed == 'submit')
@@ -47,7 +57,13 @@
 			   $('#requestAsked').val("submit");
 			   $('#quesNo').val("${currentQuestionCount}");
 		  }
+	  $('#timeLeft').val($('#timeInMins').text());
 	  return true;
+	}
+	
+	function prepareRequestURL(question){
+		var timeLeft=$('#timeInMins').text();
+		document.location.href = "mytest?quesNo=" + question + "&timeLeftFurther=" + timeLeft;
 	}
 
 </script>
@@ -114,6 +130,8 @@
 </table>
 </center>
 <center>
+<form name="submitForm" method="post" onsubmit="return onsubmitform();">
+<input id="timeLeft" name="timeLeft" type="hidden" value=""/>
 <table id="confirmation_buttons" style="margin-top: 5%" align="center">
 	<tbody>
 		<tr>
@@ -121,12 +139,13 @@
 		</tr>
 		<tr>
 			<td style="text-align: center"><a href="examCompleted?session=logout"><input
-				class="button" value="Yes" type="button" ></a></td>
+				id="yesSubmit" class="button" value="Yes" type="submit" onclick="document.pressed=this.id"></a></td>
 			<td style="text-align: center"><a href="mytest?quesNo=1"><input
-				class="button" style="width: 50px" value="No" type="button"></a></td>
+				id="noSubmit" class="button" style="width: 50px" value="No" type="submit" onclick="document.pressed=this.id"></a></td>
 		</tr>
 	</tbody>
 </table>
+</form>
 </center>
 </div>
 </c:if>
@@ -201,16 +220,11 @@ Question No. ${currentQuestionCount}</b></div>
 
 <div id="actionButton"
 	style="width: 99%; margin-left: 1%; margin-top: 5px; bottom: 0px">
-<input id="requestAsked" name="requestAsked" type="hidden" value=""/>	
-<span style="float: left"><input onclick="fnSubmit('MARK')"
-	id="underreview" class="button actionBn"
-	value="Mark for Review &amp; Next" type="submit" onclick="document.pressed=this.id"></span> 
-	
-	<!-- <span style="float: left"><input id="clearResponse"
-	onclick="resetOption()" class="button actionBn" value="Clear Response"
-	type="button"></span>-->
+<input id="requestAsked" name="requestAsked" type="hidden" value=""/>
+	<a href="mytest?quesNo=${currentQuestionCount+1}" > 	
+		<span style="float: left"><input id="underreview" class="button" value="Mark for Review &amp; Next" type="submit" onclick="document.pressed=this.id"></span>
+	</a> 
 	<c:if test="${currentQuestionCount > 1}">
-	
 	<a href="mytest?quesNo=${currentQuestionCount-1}"> 
 		<span style="float: left"><input
 		style="background-color: #3778BD; color: #FFFFFF; padding-top: 5px; padding-bottom: 5px; width: 180px; height: 35px"
@@ -224,7 +238,7 @@ Question No. ${currentQuestionCount}</b></div>
 		id="savenext" class="button"
 		value="Save &amp; Next" type="submit" onclick="document.pressed=this.id"></span></a>
 	</c:if>
-	
+	<input id="timeLeft" name="timeLeft" type="hidden" value=""/>
 	<c:if test="${currentQuestionCount == totalNoOfQuestions}">
 	 <input id="quesNo" name="quesNo" type="hidden"/>
 		<span style="float: right"><input
@@ -248,7 +262,6 @@ Question No. ${currentQuestionCount}</b></div>
 </div>
 <div style="width: 59%; height: 75px; float: left;">
 <div style="margin-top: 20px; width: 100%;" id="showTime">
-<input id="timeLeft" name="timeLeft" type="hidden" />
 <b>Time
 Left : <span id="timeInMins"></span></b></div>
 <div style="width: 100%"><i>Candidate</i></div>
@@ -286,7 +299,7 @@ Palette :</div>
 			
 			<c:forEach begin="1" end="${questionCount}" var="question" >
 				<c:set var="count">${((rowCount-1)*4) +question}</c:set>
-				<td id="qtd_${rowCount}_${question}"><a href="mytest?quesNo=${((rowCount-1)*4) +question}">
+				<td id="qtd_${rowCount}_${question}"><a  onclick="prepareRequestURL('${((rowCount-1)*4) +question}')">
 				<span title="${userResponseMap[count].questionStatus}" class="${userResponseMap[count].questionStatus}"
 				id="span_${rowCount}_${question}"> ${((rowCount-1)*4) +question}</span> </a></td>
 			</c:forEach>

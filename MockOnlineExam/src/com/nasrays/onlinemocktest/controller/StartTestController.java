@@ -56,7 +56,13 @@ public class StartTestController{
 			@RequestParam(value = "quesNo", required = false, defaultValue = "1") Integer questionNo,
 			@RequestParam Map<String, String> allRequestParams,HttpServletRequest request) {
 		MockTestDao mtDao = new MockTestDao();
-		ModelAndView mav = new ModelAndView();
+		ModelAndView mav= null;
+		if(null != allRequestParams.get("timeLeftFurther")){
+			mav = new ModelAndView(new RedirectView("mytest?quesNo=" + allRequestParams.get("quesNo")));
+		}
+		else{
+			mav = new ModelAndView();
+		}
 		if(null !=allRequestParams.get("emailid")){
 			UserDetails userDetails = new UserDetails();
 			userDetails.setEmail(allRequestParams.get("emailid"));
@@ -76,7 +82,8 @@ public class StartTestController{
 			return mav;
 		}
 		if(null!=allRequestParams.get("timeLeft")){
-			request.getSession().setAttribute("timeLeft", allRequestParams.get("timeLeft"));
+			String[] time = allRequestParams.get("timeLeft").split(":");
+			request.getSession().setAttribute("timeLeft", Integer.valueOf(time[0])*60 + Integer.valueOf(time[1]));
 		}
 		else{
 			request.getSession().setAttribute("timeLeft", 1800);
@@ -98,13 +105,22 @@ public class StartTestController{
 		if (userResponseMap.isEmpty()) {
 			prepareUserResponse();
 		}
+		int questionToBeUpdated=questionNo-1;
 		if((!"back".equalsIgnoreCase(allRequestParams.get("requestAsked")) || questionNo>1) && null != allRequestParams.get("answer")){
-			int questionToBeUpdated=questionNo-1;
+			
 			if("submit".equalsIgnoreCase(allRequestParams.get("requestAsked"))){
 				questionToBeUpdated=questionNo;
 			}
-			this.userResponseMap.get(String.valueOf(questionToBeUpdated)).setQuestionStatus(Constants.ANSWERED);
+			if("underreview".equalsIgnoreCase(allRequestParams.get("requestAsked"))){
+				this.userResponseMap.get(String.valueOf(questionToBeUpdated)).setQuestionStatus(Constants.REVIEW_ANSWERED);
+			}
+			else{
+				this.userResponseMap.get(String.valueOf(questionToBeUpdated)).setQuestionStatus(Constants.ANSWERED);
+			}
 			this.userResponseMap.get(String.valueOf(questionToBeUpdated)).setUserChosenAnswer(allRequestParams.get("answer"));
+		}
+		if("underreview".equalsIgnoreCase(allRequestParams.get("requestAsked")) && null == allRequestParams.get("answer")){
+			this.userResponseMap.get(String.valueOf(questionToBeUpdated)).setQuestionStatus(Constants.REVIEW);
 		}
 		if("submit".equalsIgnoreCase(allRequestParams.get("requestAsked"))){
 			List<Integer> list = getResponseList();

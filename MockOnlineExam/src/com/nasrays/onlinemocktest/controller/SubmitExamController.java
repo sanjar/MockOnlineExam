@@ -13,7 +13,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.catalina.tribes.util.Arrays;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +26,7 @@ import com.nasrays.onlinemocktest.model.Subject;
 import com.nasrays.onlinemocktest.model.UserDetails;
 import com.nasrays.onlinemocktest.model.UserQuestionAnswerResponse;
 import com.nasrays.onlinemocktest.utils.Constants;
+import com.nasrays.onlinemocktest.utils.Utils;
 
 @Controller
 public class SubmitExamController {
@@ -164,7 +164,7 @@ public class SubmitExamController {
 				"</tr>\n"+
 				"<tr>\n"+
 					"<td>"+testName+"</td>\n"+
-					"<td>"+Arrays.add(answerDetailsArray)+"</td>\n"+
+					"<td>"+Utils.add(answerDetailsArray)+"</td>\n"+
 					"<td>"+answerDetailsArray[0]+"</td>\n"+
 					"<td>"+answerDetailsArray[1]+"</td>\n"+
 					"<td>"+answerDetailsArray[2]+"</td>\n"+
@@ -177,6 +177,8 @@ public class SubmitExamController {
 		"</html>\n";
 		return htmlContent;
 	}
+
+	
 	
 	/*public static void main(String[] args) {
 		SubmitExamController s = new SubmitExamController();
