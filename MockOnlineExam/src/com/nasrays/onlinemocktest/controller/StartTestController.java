@@ -81,8 +81,10 @@ public class StartTestController{
 			mav = new ModelAndView(new RedirectView("enterUserDetails"));
 			return mav;
 		}
-		if(null!=allRequestParams.get("timeLeft")){
-			String[] time = allRequestParams.get("timeLeft").split(":");
+		
+		if(null!=allRequestParams.get("timeLeft") || null!=allRequestParams.get("timeLeftFurther")){
+			String timeLeft = null!=allRequestParams.get("timeLeft")?"timeLeft":"timeLeftFurther";
+			String[] time = allRequestParams.get(timeLeft).split(":");
 			request.getSession().setAttribute("timeLeft", Integer.valueOf(time[0])*60 + Integer.valueOf(time[1]));
 		}
 		else{

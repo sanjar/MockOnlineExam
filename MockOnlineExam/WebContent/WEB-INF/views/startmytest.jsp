@@ -31,7 +31,7 @@
 		
 	  if(document.pressed == 'noSubmit' || document.pressed == 'yesSubmit')	{
 		  if(document.pressed == 'noSubmit'){
-			  document.questionForm.action ="mytest?quesNo=1";
+			  document.submitForm.action ="mytest?quesNo=1";
 		  }
 		  else{
 			  document.questionForm.action ="examCompleted?session=logout";
@@ -138,10 +138,10 @@
 			<td colspan="2">Are you sure you want to submit the Exam ?</td>
 		</tr>
 		<tr>
-			<td style="text-align: center"><a href="examCompleted?session=logout"><input
-				id="yesSubmit" class="button" value="Yes" type="submit" onclick="document.pressed=this.id"></a></td>
-			<td style="text-align: center"><a href="mytest?quesNo=1"><input
-				id="noSubmit" class="button" style="width: 50px" value="No" type="submit" onclick="document.pressed=this.id"></a></td>
+			<td style="text-align: center"><input
+				id="yesSubmit" class="button" value="Yes" type="submit" onclick="document.pressed=this.id"></td>
+			<td style="text-align: center"><input
+				id="noSubmit" class="button" style="width: 50px" value="No" type="submit" onclick="document.pressed=this.id"></td>
 		</tr>
 	</tbody>
 </table>
