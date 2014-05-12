@@ -34,7 +34,7 @@
 			  document.submitForm.action ="mytest?quesNo=1";
 		  }
 		  else{
-			  document.questionForm.action ="examCompleted?session=logout";
+			  document.submitForm.action ="examCompleted?session=logout";
 		  }
 	  }
 	  if(document.pressed == 'back')
@@ -102,6 +102,7 @@
 <div id="groups" style="width: 99%; float: left;"></div>
 <c:if test="${userResponseList!=null}">
 <div style="height: 509px; display: block;" id="sectionSummaryDiv">
+<span style="display: none" id="timeInMins"></span>
 <center>
 <h3><b>Exam Summary</b></h3>
 <table class="bordertable" style="margin-top: 5%" cellspacing="0"
